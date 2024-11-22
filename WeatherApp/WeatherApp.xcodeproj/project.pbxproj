@@ -75,10 +75,10 @@
 		F2E356EB2CEFCFE300C60E8E = {
 			isa = PBXGroup;
 			children = (
-				F2E356F62CEFCFE300C60E8E /* WeatherApp */,
 				F2E357072CEFCFE600C60E8E /* WeatherAppTests */,
 				F2E357112CEFCFE600C60E8E /* WeatherAppUITests */,
 				F2E356F52CEFCFE300C60E8E /* Products */,
+				F2E356F62CEFCFE300C60E8E /* WeatherApp */,
 			);
 			sourceTree = "<group>";
 		};
