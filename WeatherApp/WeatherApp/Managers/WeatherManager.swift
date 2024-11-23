@@ -14,12 +14,8 @@ class WeatherManager {
     
     private let apiKey: String
     init() {
-        guard let path = Bundle.main.path(forResource: "Keys", ofType: "plist"),
-              let keys = NSDictionary(contentsOfFile: path),
-              let api_Key = keys["API_KEY"] as? String else {
-            fatalError("Could not load API key from plist file.")
-        }
-        apiKey = api_Key
+        
+        apiKey = "4a53c8537ec946bfb4852338242211"
     }
     
     func getCurrentWeather(latitude: CLLocationDegrees, longitude: CLLocationDegrees) async throws -> CurrentWeatherResponse{
