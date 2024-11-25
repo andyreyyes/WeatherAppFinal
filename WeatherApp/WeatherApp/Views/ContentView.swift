@@ -8,7 +8,9 @@
 import SwiftUI
 
 struct ContentView: View {
-    
+    // This works when you run the simulation bc it allows
+    // you to actually enable your location.
+    // It's pretty slow through the simulation so there is a local way to run it. Go to the weather view directly.
     @StateObject var locationManager = LocationManager()
     var weatherManager = WeatherManager()
     @State var weather: CurrentWeatherResponse?

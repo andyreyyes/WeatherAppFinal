@@ -9,6 +9,7 @@ import SwiftUI
 
 struct WeatherView: View {
     var weather: CurrentWeatherResponse
+    // Most of the stuff in here is hard coded to the dummyWeatherData. Can make changes when needed for the acutly data.
     
     var body: some View {
         ZStack(alignment: .leading) {
