@@ -36,6 +36,24 @@ class WeatherManager {
         
     }
     
+    func getForecast(name: String) async throws -> CurrentWeatherResponse{
+        // This function only works with current location. Could add a string location to change it.
+        guard let url = URL(string: "https://api.weatherapi.com/v1/forecast.json?key=\(apiKey)&q=\(name)&days=7&aqi=no&alerts=no") else {fatalError("Missing URL")}
+        
+        let urlRequest = URLRequest(url: url)
+        
+        let (data, response) = try await URLSession.shared.data(for: urlRequest)
+        
+        guard (response as? HTTPURLResponse)?.statusCode == 200 else {
+            fatalError("Error Fetching data")
+        }
+        
+        let decodedData = try JSONDecoder().decode(CurrentWeatherResponse.self, from: data)
+        
+        return decodedData
+        
+    }
+    
     func getWeatherHistory(location: String, date: String) {
         // Different api call but it is on the website
     }
