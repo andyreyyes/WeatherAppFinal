@@ -13,10 +13,17 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     
     @Published var location: CLLocationCoordinate2D?
     @Published var isLoading = false
+    @Published var error: Error?
+    
     
     override init() {
         super.init()
         manager.delegate = self
+        manager.desiredAccuracy = kCLLocationAccuracyBest
+        manager.requestWhenInUseAuthorization()
+        manager.startUpdatingLocation()
+        
+        
     }
     
     func requestLocation() {
@@ -25,12 +32,17 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     }
     
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        location = locations.first?.coordinate
+        if let location = locations.last {
+            DispatchQueue.main.async {
+                self.location = location.coordinate
+            }
+        }
         isLoading = false
     }
     
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
-        print("Error getting location", error)
-        isLoading = false
+        DispatchQueue.main.async {
+            self.error = error
+        }
     }
 }
