@@ -18,7 +18,7 @@ class WeatherManager {
         apiKey = "4a53c8537ec946bfb4852338242211" // hardcoded cuz i couldn't findout how to store it
     }
     
-    func getCurrentWeather(latitude: CLLocationDegrees, longitude: CLLocationDegrees) async throws -> CurrentWeatherResponse{
+    func getForecast(latitude: CLLocationDegrees, longitude: CLLocationDegrees) async throws -> CurrentWeatherResponse{
         // This function only works with current location. Could add a string location to change it.
         guard let url = URL(string: "https://api.weatherapi.com/v1/forecast.json?key=\(apiKey)&q=\(latitude),\(longitude)&days=1&aqi=no&alerts=no") else {fatalError("Missing URL")}
         
@@ -34,10 +34,6 @@ class WeatherManager {
         
         return decodedData
         
-    }
-    
-    func getForecast(location: String, amount_of_days: Int) {
-        // Do the same api call in the get current weather, but you can pass in the days in the url
     }
     
     func getWeatherHistory(location: String, date: String) {
