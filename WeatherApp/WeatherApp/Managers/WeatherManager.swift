@@ -20,7 +20,7 @@ class WeatherManager {
     
     func getForecast(latitude: CLLocationDegrees, longitude: CLLocationDegrees) async throws -> CurrentWeatherResponse{
         // This function only works with current location. Could add a string location to change it.
-        guard let url = URL(string: "https://api.weatherapi.com/v1/forecast.json?key=\(apiKey)&q=\(latitude),\(longitude)&days=1&aqi=no&alerts=no") else {fatalError("Missing URL")}
+        guard let url = URL(string: "https://api.weatherapi.com/v1/forecast.json?key=\(apiKey)&q=\(latitude),\(longitude)&days=7&aqi=no&alerts=no") else {fatalError("Missing URL")}
         
         let urlRequest = URLRequest(url: url)
         
