@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+
 struct WeatherView: View {
     var weather: CurrentWeatherResponse
     // Most of the stuff in here is hard coded to the dummyWeatherData. Can make changes when needed for the acutly data.
@@ -14,86 +15,98 @@ struct WeatherView: View {
     var body: some View {
         ZStack(alignment: .leading) {
             VStack {
-                VStack(alignment: .leading, spacing: 5) {
+                VStack(alignment: .center, spacing: 5) {
                     Text(weather.location.name)
                         .bold().font(.title)
+                        .frame(maxWidth: .infinity, alignment: .center)
                     Text("Today, \(Date().formatted(.dateTime.month().day().hour().minute()))")
                         .fontWeight(.light)
+                        .frame(maxWidth: .infinity, alignment: .center)
                 }
+                
                 .frame(maxWidth: .infinity, alignment: .leading)
                 Spacer()
+                ScrollView(.horizontal) {
+                    HStack(spacing: 20) {
+                        // fix this to filter correctly
+                        
+                        let hours = weather.forecast.forecastday[0].hour[0..<12]
+                        if hours.isEmpty {
+                            Text("No data").foregroundColor(.gray)
+                        } else {
+                            // also correctly format this to have the time at the top
+                            ForEach(hours, id: \.time_epoch) {
+                                hour in
+                                VStack(spacing: 15) {
+                                    if let date = ISO8601DateFormatter().date(from: hour.time) {
+                                        Text(date.formatted(.dateTime.hour().minute()))
+                                            .font(.caption)
+                                    } else {
+                                        Text("N/A")
+                                    }
+                                    AsyncImage(url: URL(string: "https:" + hour.condition.icon)) { image in image.resizable()
+                                            .aspectRatio(contentMode: .fit)
+                                            .frame(width: 40, height: 40)
+                                        
+                                    } placeholder: {
+                                        LoadingView()
+                                    }
+                                    Text("\(hour.temp_f.roundDouble())" + "°")
+                                        .font(.title2)
+                                        .bold()
+                                }
+                                .frame(width: 100, alignment: .center)
+                                .padding()
+                                .background(Color(.systemGray6))
+                                .cornerRadius(10)
+                            }
+                        }
+                    }
+                }
+                .padding()
+                .frame(maxWidth: .infinity, alignment: .leading)
                 
                 VStack {
-                    HStack {
-                        VStack(spacing: 20) {
-                            Image(systemName: "sun.max")
-                                .font(.system(size: 40))
+                    Spacer()
+                    VStack(alignment: .leading, spacing: 20)
+                    {
+                        Text("Weather Now")
+                            .bold()
+                            .padding(.bottom)
+                        HStack {
+                            WeatherRow(logo: "thermometer", name: "Min Temp", value: weather.forecast.forecastday[0].day.mintemp_f.roundDouble() + "°")
+                            Spacer()
                             
-                            Text(weather.current.condition.text)
+                            WeatherRow(logo: "thermometer", name: "Max Temp", value: weather.forecast.forecastday[0].day.maxtemp_f.roundDouble() + "°")
                         }
-                        .frame(width: 150, alignment: .leading)
-                        
-                        Spacer()
-                        Text(weather.current.feelslike_f.roundDouble() + "°")
-                            .font(.system(size:100))
-                            .fontWeight(.bold)
-                            .padding()
+                        HStack {
+                            WeatherRow(logo: "wind", name: "Wind Speed", value: weather.current.wind_mph.roundDouble() + "m/s")
+                            Spacer()
+                            
+                            WeatherRow(logo: "humidity", name: "Humidity", value: String(weather.current.humidity) + "%")
+                        }
                     }
-                    Spacer()
-                        .frame(height: 80)
-                    
-                    AsyncImage(url: URL(string: "https://pixabay.com/get/g0c317c7fe8c66f967c8fa97aec7f2e2aa5eb2d808c220738df475832a5e6706068b6ddef0589b313809fb8adfdb317b80ea436ad0d5b012ab59e403bff5d7b21_1280.png")) {image in image.resizable().aspectRatio(contentMode:.fit)
-                            .frame(width:350)
-                    } placeholder: {
-                        ProgressView()
-                    }
-
-                    Spacer()
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding()
+                    .padding(.bottom, 20)
+                    .foregroundColor(Color(hue: 0.656, saturation: 0.787, brightness: 0.354))
+                    .background(.white)
+                    .cornerRadius(20, corners: [.topLeft, .topRight])
                 }
-                .frame(maxWidth: .infinity)
-            }
-            .padding()
-            .frame(maxWidth: .infinity, alignment: .leading)
-            
-            VStack {
-                Spacer()
-                VStack(alignment: .leading, spacing: 20)
-                {
-                    Text("Weather Now")
-                        .bold()
-                        .padding(.bottom)
-                    HStack {
-                        WeatherRow(logo: "thermometer", name: "Min Temp", value: weather.forecast.forecastday[0].day.mintemp_f.roundDouble() + "°")
-                        Spacer()
-                        
-                        WeatherRow(logo: "thermometer", name: "Max Temp", value: weather.forecast.forecastday[0].day.maxtemp_f.roundDouble() + "°")
-                    }
-                    HStack {
-                        WeatherRow(logo: "wind", name: "Wind Speed", value: weather.current.wind_mph.roundDouble() + "m/s")
-                        Spacer()
-                        
-                        WeatherRow(logo: "humidity", name: "Humidity", value: String(weather.current.humidity) + "%")
-                    }
-                }
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .padding()
-                .padding(.bottom, 20)
-                .foregroundColor(Color(hue: 0.656, saturation: 0.787, brightness: 0.354))
-                .background(.white)
-                .cornerRadius(20, corners: [.topLeft, .topRight])
+                
+                
             }
             
-            
+            .edgesIgnoringSafeArea(.bottom)
+            .background(Color(hue: 0.656, saturation: 0.787, brightness: 0.354))
+            .preferredColorScheme(.dark)
         }
-        
-        .edgesIgnoringSafeArea(.bottom)
-        .background(Color(hue: 0.656, saturation: 0.787, brightness: 0.354))
-        .preferredColorScheme(.dark)
     }
 }
+    
+    struct WeaterView_Previews: PreviewProvider {
+        static var previews: some View {
+            WeatherView(weather: previewWeather)
+        }
+    }
 
-struct WeaterView_Previews: PreviewProvider {
-    static var previews: some View {
-        WeatherView(weather: previewWeather)
-    }
-}
