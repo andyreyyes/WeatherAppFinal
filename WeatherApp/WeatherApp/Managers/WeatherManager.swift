@@ -61,6 +61,16 @@ class WeatherManager {
 
 // This can be used with the getForcast function bc its the same call. Going to need
 // to create a different struct for the history
+struct SearchLocation: Identifiable, Decodable {
+    let id: Int
+    let name: String
+    let region: String
+    let country: String
+    let lat: Double
+    let lon: Double
+    let url: String
+}
+
 struct CurrentWeatherResponse: Decodable {
 
     struct Location: Decodable {
