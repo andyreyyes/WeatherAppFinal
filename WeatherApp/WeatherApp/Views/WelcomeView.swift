@@ -43,6 +43,7 @@ struct WelcomeView: View {
                 .padding()
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .background(BackgroundTimer(weather: "clear").edgesIgnoringSafeArea(.all))
         }
         .navigationViewStyle(StackNavigationViewStyle())
     }
