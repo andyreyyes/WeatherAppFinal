@@ -144,16 +144,14 @@ struct WeatherView: View {
                     .background(.white)
                     .cornerRadius(20, corners: [.topLeft, .topRight])
                 }
-                
-                
             }
-            
-//            .edgesIgnoringSafeArea(.bottom)
-//            .background(Color(hue: 0.656, saturation: 0.787, brightness: 0.354))
-//            .preferredColorScheme(.dark)
         }
     }
 }
+
+/*
+  BackgroundTimer: struct to adjust the weather and background color depending on the time and weather of the day.
+ */
 struct BackgroundTimer: View {
     let weather: String // current weather
     
@@ -174,15 +172,15 @@ struct BackgroundTimer: View {
     }
     // Change the background according to the time of day
     switch hour {
-    case 6..<12:
-        return colors.map { $0.opacity(0.9)}
-    case 12..<18:
-        return colors.map { $0.opacity(1.0)}
-    case 18..<20:
-        return colors.map { $0.opacity(0.7)}
+    case 5..<8:
+        return colors.map { $0.opacity(0.9) }.prefix(2) + [Color.pink.opacity(0.8)]
+    case 8..<17:
+        return colors.map { $0.opacity(1.0) }
+    case 17..<20:
+        return colors.map { $0.opacity(0.7) }.prefix(2) + [Color.purple.opacity(0.8)]
     default:
-        return colors.map { $0.opacity(0.5)}
-    }
+        return colors.map { $0.opacity(0.5) }.prefix(2) + [Color.black]
+        }
     }
     
     var body: some View {
@@ -195,14 +193,12 @@ struct AnimatedWeather: View {
     let time: Int //current time
     
     @State private var position: CGFloat = -200 //Initiall starting point for sun/moon
+    @State private var color: Color = Color.yellow //Starting color
     
     var body: some View {
         Circle()
-            .fill(
-                LinearGradient(gradient: Gradient(colors:[Color.yellow.opacity(0.8), Color.orange.opacity(0.6)]), startPoint: .top, endPoint: .bottom
-                              )
-            )
-            .frame(width: 150, height: 150)
+            .fill(color)
+            .frame(width: 100, height: 100)
             .offset(x: 0, y: position)
             .onAppear {
                 animatePos()
@@ -211,14 +207,19 @@ struct AnimatedWeather: View {
     
     func animatePos() {
         withAnimation(.easeInOut(duration: 3)) {
-            if time < 6 || time >= 20 {
-                position = -200
-            } else if time >= 12 && time < 12 {
-                position = -50
-            } else if time >= 12 && time < 18 {
-                position = -100
-            } else {
+            switch time {
+            case 5..<8:
                 position = -150
+                color = Color.orange
+            case 8..<17:
+                position = -200
+                color = Color.yellow
+            case 17..<20:
+                position = -150
+                color = Color.orange.opacity(0.8)
+            default:
+                position = 400
+                color = Color.clear
             }
         }
     }
