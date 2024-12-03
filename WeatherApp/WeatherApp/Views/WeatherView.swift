@@ -30,7 +30,11 @@ struct WeatherView: View {
     
     var body: some View {
         ZStack(alignment: .leading) {
+            
             BackgroundTimer(weather: weather.current.condition.text).edgesIgnoringSafeArea(.all)
+            
+            AnimatedWeather(weather: weather.current.condition.text, time: Calendar.current.component(.hour, from: Date()))
+            
             VStack {
                 VStack(alignment: .center, spacing: 5) {
                     Text(weather.location.name)
@@ -184,14 +188,47 @@ struct BackgroundTimer: View {
     var body: some View {
         LinearGradient (gradient: Gradient(colors: gradientColors), startPoint: .top, endPoint: .bottom)
     }
-    
-    
 }
+
+struct AnimatedWeather: View {
+    let weather: String //current weather
+    let time: Int //current time
     
-    struct WeaterView_Previews: PreviewProvider {
-        static var previews: some View {
-            
-            WeatherView(weather: previewWeather)
+    @State private var position: CGFloat = -200 //Initiall starting point for sun/moon
+    
+    var body: some View {
+        Circle()
+            .fill(
+                LinearGradient(gradient: Gradient(colors:[Color.yellow.opacity(0.8), Color.orange.opacity(0.6)]), startPoint: .top, endPoint: .bottom
+                              )
+            )
+            .frame(width: 150, height: 150)
+            .offset(x: 0, y: position)
+            .onAppear {
+                animatePos()
+            }
+    }
+    
+    func animatePos() {
+        withAnimation(.easeInOut(duration: 3)) {
+            if time < 6 || time >= 20 {
+                position = -200
+            } else if time >= 12 && time < 12 {
+                position = -50
+            } else if time >= 12 && time < 18 {
+                position = -100
+            } else {
+                position = -150
+            }
         }
     }
+}
+
+
+    
+struct WeaterView_Previews: PreviewProvider {
+    static var previews: some View {
+        WeatherView(weather: previewWeather)
+    }
+}
 
