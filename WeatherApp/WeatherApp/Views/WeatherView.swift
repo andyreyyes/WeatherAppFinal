@@ -30,6 +30,7 @@ struct WeatherView: View {
     
     var body: some View {
         ZStack(alignment: .leading) {
+            BackgroundTimer(weather: weather.current.condition.text).edgesIgnoringSafeArea(.all)
             VStack {
                 VStack(alignment: .center, spacing: 5) {
                     Text(weather.location.name)
@@ -143,11 +144,48 @@ struct WeatherView: View {
                 
             }
             
-            .edgesIgnoringSafeArea(.bottom)
-            .background(Color(hue: 0.656, saturation: 0.787, brightness: 0.354))
-            .preferredColorScheme(.dark)
+//            .edgesIgnoringSafeArea(.bottom)
+//            .background(Color(hue: 0.656, saturation: 0.787, brightness: 0.354))
+//            .preferredColorScheme(.dark)
         }
     }
+}
+struct BackgroundTimer: View {
+    let weather: String // current weather
+    
+    var gradientColors: [Color] {
+    let hour = Calendar.current.component(.hour, from: Date()) // current hour
+    
+    var colors = [Color.blue.opacity(0.5), Color.orange.opacity(0.5)]
+    
+    // Change the background to the weather at the current time
+    if weather.lowercased().contains("rain") {
+        colors = [Color.gray.opacity(0.7), Color.blue.opacity(0.5)]
+    } else if weather.lowercased().contains("cloud") {
+        colors = [Color.gray.opacity(0.8), Color.gray.opacity(0.4)]
+    } else if weather.lowercased().contains("snow") {
+        colors = [Color.white.opacity(0.8), Color.white.opacity(0.4)]
+    } else if weather.lowercased().contains("thunder") {
+        colors = [Color.black, Color.purple.opacity(0.7)]
+    }
+    // Change the background according to the time of day
+    switch hour {
+    case 6..<12:
+        return colors.map { $0.opacity(0.9)}
+    case 12..<18:
+        return colors.map { $0.opacity(1.0)}
+    case 18..<20:
+        return colors.map { $0.opacity(0.7)}
+    default:
+        return colors.map { $0.opacity(0.5)}
+    }
+    }
+    
+    var body: some View {
+        LinearGradient (gradient: Gradient(colors: gradientColors), startPoint: .top, endPoint: .bottom)
+    }
+    
+    
 }
     
     struct WeaterView_Previews: PreviewProvider {
