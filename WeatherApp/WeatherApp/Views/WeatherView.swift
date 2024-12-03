@@ -6,7 +6,23 @@
 //
 
 import SwiftUI
+import Foundation
 
+
+func formatStringTime(_ timeInHour: String) -> String {
+    let currentTime = timeInHour.split(separator: ":").first
+    let intCurrentTime = Int(currentTime!)
+    if let intCurrentTime {
+        if intCurrentTime > 12 {
+            let time = intCurrentTime - 12
+            return "\(time)PM"
+        }
+        else {
+            return "\(intCurrentTime)AM"
+        }
+    }
+    return "Time not found"
+}
 
 struct WeatherView: View {
     var weather: CurrentWeatherResponse
@@ -19,9 +35,11 @@ struct WeatherView: View {
                     Text(weather.location.name)
                         .bold().font(.title)
                         .frame(maxWidth: .infinity, alignment: .center)
+                        .foregroundColor(.white)
                     Text("Today, \(Date().formatted(.dateTime.month().day().hour().minute()))")
                         .fontWeight(.light)
                         .frame(maxWidth: .infinity, alignment: .center)
+                        .foregroundColor(.white)
                 }
                 
                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -29,21 +47,15 @@ struct WeatherView: View {
                 ScrollView(.horizontal) {
                     HStack(spacing: 20) {
                         // fix this to filter correctly
-                        
-                        let hours = weather.forecast.forecastday[0].hour[0..<12]
+                        let currentHour = Calendar.current.component(.hour, from: Date())
+                        let hours = weather.forecast.forecastday[0].hour[currentHour..<24]
                         if hours.isEmpty {
                             Text("No data").foregroundColor(.gray)
                         } else {
-                            // also correctly format this to have the time at the top
                             ForEach(hours, id: \.time_epoch) {
                                 hour in
                                 VStack(spacing: 15) {
-                                    if let date = ISO8601DateFormatter().date(from: hour.time) {
-                                        Text(date.formatted(.dateTime.hour().minute()))
-                                            .font(.caption)
-                                    } else {
-                                        Text("N/A")
-                                    }
+                                    Text(formatStringTime(String(hour.time.suffix(5))))
                                     AsyncImage(url: URL(string: "https:" + hour.condition.icon)) { image in image.resizable()
                                             .aspectRatio(contentMode: .fit)
                                             .frame(width: 40, height: 40)
@@ -65,6 +77,40 @@ struct WeatherView: View {
                 }
                 .padding()
                 .frame(maxWidth: .infinity, alignment: .leading)
+                
+                ScrollView(.horizontal) {
+                    HStack(spacing: 20) {
+                        // fix this to filter correctly
+                        let forecastdays = weather.forecast.forecastday[1..<7]
+                        if forecastdays.isEmpty {
+                            Text("No data").foregroundColor(.gray)
+                        } else {
+                            ForEach(forecastdays, id: \.date_epoch) {
+                                forecastday in
+                                VStack(spacing: 15) {
+                                    Text(forecastday.date.suffix(5))
+                                    AsyncImage(url: URL(string: "https:" + forecastday.day.condition.icon)) { image in image.resizable()
+                                            .aspectRatio(contentMode: .fit)
+                                            .frame(width: 40, height: 40)
+                                        
+                                    } placeholder: {
+                                        LoadingView()
+                                    }
+                                    Text("\(forecastday.day.avgtemp_f.roundDouble())" + "°")
+                                        .font(.title2)
+                                        .bold()
+                                }
+                                .frame(width: 100, alignment: .center)
+                                .padding()
+                                .background(Color(.systemGray6))
+                                .cornerRadius(10)
+                            }
+                        }
+                    }
+                }
+                .padding()
+                .frame(maxWidth: .infinity, alignment: .leading)
+                
                 
                 VStack {
                     Spacer()
@@ -106,6 +152,7 @@ struct WeatherView: View {
     
     struct WeaterView_Previews: PreviewProvider {
         static var previews: some View {
+            
             WeatherView(weather: previewWeather)
         }
     }
